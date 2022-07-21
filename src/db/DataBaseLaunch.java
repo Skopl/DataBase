@@ -7,7 +7,7 @@ public class DataBaseLaunch {
 	public static final String DB_Driver = "org.sqlite.JDBC";
 	
 	public static void main(String [] args) {
-			
+			createTableCats();
 	}
 	
 	public static void deleteType(int id) {
@@ -105,6 +105,24 @@ public class DataBaseLaunch {
 				String type = result.getString("type");
 				System.out.print(id + "\t" + type+"\n");
 			}
+			
+			connection.close();	
+		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();	
+			}
+	}
+
+	public static void createTableCats() {
+		String SQLcommand = "CREATE TABLE IF NOT EXISTS cats(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, name VARCHAR(20) NOT NULL,type_id INTEGER NOT NULL REFERENCES typess(id), age INTEGER NOT NULL, weight DOUBLE);"; 
+		//System.out.println(SQLcommand);
+		try {
+			Class.forName(DB_Driver);
+			Connection connection = DriverManager.getConnection(DB_URL);
+			
+			Statement stat = connection.createStatement();
+			stat.executeUpdate(SQLcommand);
 			
 			connection.close();	
 		}catch(ClassNotFoundException e) {
