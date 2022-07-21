@@ -7,7 +7,7 @@ public class DataBaseLaunch {
 	public static final String DB_Driver = "org.sqlite.JDBC";
 	
 	public static void main(String [] args) {
-			createTableCats();
+		
 	}
 	
 	public static void deleteType(int id) {
@@ -122,6 +122,36 @@ public class DataBaseLaunch {
 			Connection connection = DriverManager.getConnection(DB_URL);
 			
 			Statement stat = connection.createStatement();
+			stat.executeUpdate(SQLcommand);
+			
+			connection.close();	
+		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}catch(SQLException e){
+			e.printStackTrace();	
+			}
+	}
+
+	public static void insertCat(String name,String type,int age, Double weight) {
+		String SQLcommand = "SELECT id FROM typess WHERE type = '"+type+"';"; 
+		//System.out.println(SQLcommand);
+		try {
+			ResultSet result;
+			Class.forName(DB_Driver);
+			Connection connection = DriverManager.getConnection(DB_URL);
+			
+			Statement stat = connection.createStatement();
+			
+			//Проверяем, есть ли в таблице заданное значение, при отсутствии создаем,перезапускаем )))))))
+			try {
+				result = stat.executeQuery(SQLcommand);	 
+				SQLcommand = "INSERT INTO cats(name,type_id,age,weight) VALUES('"+name+"',"+result.getInt("id")+","+age+","+weight+")";
+			}
+			catch(SQLException e) {
+				stat.executeUpdate("INSERT INTO typess(type) VALUES ('"+type+"');");
+				insertCat(name,type,age,weight);
+			}
+			
 			stat.executeUpdate(SQLcommand);
 			
 			connection.close();	
